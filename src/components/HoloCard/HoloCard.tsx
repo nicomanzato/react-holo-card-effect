@@ -25,8 +25,16 @@ export const HoloCard = ({ children, url }: Props) => {
     setHover(true);
 
     const card = ref.current;
-    const l = (event as any).nativeEvent.offsetX;
-    const t = (event as any).nativeEvent.offsetY;
+
+    const l =
+      event.type === 'touchmove'
+        ? event.touches[0].clientX
+        : event.nativeEvent.offsetX;
+
+    const t =
+      event.type === 'touchmove'
+        ? event.touches[0].clientY
+        : event.nativeEvent.offsetY;
 
     const h = card ? card.clientHeight : 0;
     const w = card ? card.clientWidth : 0;
