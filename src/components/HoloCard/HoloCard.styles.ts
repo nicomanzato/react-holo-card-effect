@@ -150,11 +150,11 @@ export const StyledHoloCard = styled.div(
         tranform: rotateX(0deg) rotateY(0deg);
         &:before {
           transition: 1s;
-          animation: ${holoGradient} 12s ease 0s 1;
+          animation: ${holoGradient} 12s ease infinite;
         }
         &:after {
           transition: 1s;
-          animation: ${holoSparkle} 12s ease 0s 1;
+          animation: ${holoSparkle} 12s ease infinite;
         }
       `,
   ]
