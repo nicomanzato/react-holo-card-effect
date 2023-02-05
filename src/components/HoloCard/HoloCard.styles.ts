@@ -1,67 +1,47 @@
 import styled, { keyframes, css } from 'styled-components';
 
-const haloCardKeyframe = keyframes`
+const holoSparkle = keyframes`
   0%, 100% {
-    transform: none;
+    opacity: .75;  filter: brightness(1.2) contrast(1.25);
   }
-
-  25% {
-    transform: rotateZ(-3deg) rotateX(-7deg) rotateY(6deg)
+  5%, 8% {
+    opacity: 1; filter: brightness(.8) contrast(1.2);
   }
-
-  66% {
-    transform: rotateZ(3deg) rotateX(7deg) rotateY(-6deg)
+  13%, 16% {
+    opacity: .5; filter: brightness(1.2) contrast(.8);
+  }
+  35%, 38% {
+    opacity: 1;  filter: brightness(1) contrast(1);
+  }
+  55% {
+    opacity: .33; filter: brightness(1.2) contrast(1.25);
   }
 `;
 
-const haloSparkleKeyframe = keyframes`
-  0%, 5% {
-    opacity: 0.1;
-  }
-
-  20% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0.1;
-  }
-`;
-
-const haloGradientKeyframe = keyframes`
+const holoGradient = keyframes`
   0%, 100% {
-    opacity: 0;
-    background-position: 0% 0%;
-  }
-
-  8% {
-    opacity: 0;
-  }
-
-  10% {
-    background-position: 0% 0%;
-  }
-
-  19% {
-    background-position: 100% 100%;
     opacity: 0.5;
+    background-position: 50% 50%;
+    filter: brightness(.5) contrast(1);
   }
-
-  35% {
+  5%, 9% {
     background-position: 100% 100%;
+    opacity: 1;
+    filter: brightness(.75) contrast(1.25);
   }
-
+  13%, 17% {
+    background-position: 0% 0%;
+    opacity: .88;
+  }
+  35%, 39% {
+    background-position: 100% 100%;
+    opacity: 1;
+    filter: brightness(.5) contrast(1);
+  }
   55% {
     background-position: 0% 0%;
-    opacity: 0.3;
-  }
-
-  75% {
-    opacity: 0;
-  }
-
-  100% {
-    opacity: 0.1;
+    opacity: 1;
+    filter: brightness(.75) contrast(1.25);
   }
 `;
 
@@ -69,22 +49,31 @@ export const StyledHoloCard = styled.div(
   ({
     active,
     activeBackgroundPosition,
+    activeRotation,
+    animated,
+    url,
   }: {
     active: boolean;
     activeBackgroundPosition: {
       tp: number;
       lp: number;
     };
+    activeRotation: {
+      x: number;
+      y: number;
+    };
+    url: string;
+    animated: boolean;
   }) => [
     css`
       width: 320px;
       height: 446px;
       background-color: #211799;
-      background-image: url(https://images.pokemontcg.io/xy2/12_hires.png);
+      background-image: url(${url});
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center;
-      border-radius: 15px;
+      border-radius: 5% / 3.5%;
       box-shadow: -3px -3px 3px 0 rgba(#26e6f7, 0.3),
         3px 3px 3px 0 rgba(#f759e4, 0.3), 0 0 6px 2px rgba(#ffe759, 03),
         0 35px 25px -15px rgba(0, 0, 0, 0.3);
@@ -93,7 +82,7 @@ export const StyledHoloCard = styled.div(
       display: inline-block;
       vertical-align: middle;
       margin: 20px 10px;
-      animation: ${haloCardKeyframe} 15s ease infinite;
+      transform: rotateX(${activeRotation.y}deg) rotateY(${activeRotation.x}deg);
 
       &:before,
       &:after {
@@ -109,24 +98,34 @@ export const StyledHoloCard = styled.div(
         mix-blend-mode: color-dodge;
         opacity: 0.2;
         z-index: 1;
-        animation: ${haloGradientKeyframe} 15s ease infinite;
         background-image: linear-gradient(
           115deg,
           transparent 0%,
-          rgb(0, 231, 255) 30%,
-          rgb(255, 0, 231) 70%,
+          #54a29e 25%,
+          transparent 47%,
+          transparent 53%,
+          #a79d66 75%,
           transparent 100%
         );
       }
 
       &:after {
-        background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/13471/sparkles.gif');
+        background-image: url('https://assets.codepen.io/13471/sparkles.gif'),
+          url(https://assets.codepen.io/13471/holo.png),
+          linear-gradient(
+            125deg,
+            #ff008450 15%,
+            #fca40040 30%,
+            #ffff0030 40%,
+            #00ff8a20 60%,
+            #00cfff40 70%,
+            #cc4cfa50 85%
+          );
         position: center;
         background-size: 180%;
         mix-blend-mode: color-dodge;
         opacity: 1;
         z-index: 1;
-        animation: ${haloSparkleKeyframe} 15s ease infinite;
       }
     `,
     active &&
@@ -136,16 +135,27 @@ export const StyledHoloCard = styled.div(
     animation: none;
     transition: none;
     background-image: linear-gradient(
-      115deg,
-      transparent 0%,
+      110deg,
       transparent 25%,
-      rgba(0, 231, 255, 0.7) 45%,
-      rgba(255, 0, 231, 0.7) 55%,
-      transparent 70%,
-      transparent 100%
+      #54a29e 48%,
+      #a79d66 52%,
+      transparent 75%
     );
     background-position: ${activeBackgroundPosition.lp}% ${activeBackgroundPosition.tp}%;
   }
 `,
+    animated &&
+      css`
+        transition: 1s;
+        tranform: rotateX(0deg) rotateY(0deg);
+        &:before {
+          transition: 1s;
+          animation: ${holoGradient} 12s ease 0s 1;
+        }
+        &:after {
+          transition: 1s;
+          animation: ${holoSparkle} 12s ease 0s 1;
+        }
+      `,
   ]
 );

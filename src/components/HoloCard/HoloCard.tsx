@@ -1,54 +1,66 @@
 import React, { useRef, useState } from 'react';
 import { StyledHoloCard } from './HoloCard.styles';
+import Tilt from 'react-parallax-tilt';
 
 interface Props {
   children?: React.ReactNode;
+  url: string;
 }
 
-export const HoloCard = ({ children }: Props) => {
+export const HoloCard = ({ children, url }: Props) => {
   const [hover, setHover] = useState(false);
-  const [, setError] = useState<any>();
+  const [animated, setAnimated] = useState(true);
   const [activeBackgroundPosition, setActiveBackgroundPosition] = useState({
     tp: 0,
     lp: 0,
   });
+  const [activeRotation, setActiveRotation] = useState({
+    y: 0,
+    x: 0,
+  });
   const ref = useRef<HTMLInputElement>(null);
 
-  const handleOnMouseOver = (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => {
-    try {
-      setHover(true);
+  const handleOnMouseOver = (event: any) => {
+    setAnimated(false);
+    setHover(true);
 
-      const card = ref.current;
-      const l = (event as any).offsetX;
-      const t = (event as any).offsetY;
-      const h = card?.height ? card?.height : 0;
-      const w = card?.width ? card?.width : 0;
+    const card = ref.current;
+    const l = (event as any).nativeEvent.offsetX;
+    const t = (event as any).nativeEvent.offsetY;
 
-      const lp = Math.abs(Math.floor((100 / w) * l) - 100);
-      const tp = Math.abs(Math.floor((100 / h) * t) - 100);
+    const h = card ? card.clientHeight : 0;
+    const w = card ? card.clientWidth : 0;
 
-      setActiveBackgroundPosition({ lp, tp });
-    } catch (e) {
-      console.log(e);
-      setError(e);
-    }
+    var px = Math.abs(Math.floor((100 / w) * l) - 100);
+    var py = Math.abs(Math.floor((100 / h) * t) - 100);
+
+    var lp = 50 + (px - 50) / 1.5;
+    var tp = 50 + (py - 50) / 1.5;
+
+    setActiveBackgroundPosition({ lp, tp });
   };
 
   const handleOnMouseOut = () => {
     setHover(false);
+    setAnimated(true);
+    setActiveRotation({ x: 0, y: 0 });
   };
 
   return (
-    <StyledHoloCard
-      ref={ref}
-      active={hover}
-      activeBackgroundPosition={activeBackgroundPosition}
-      onMouseEnter={handleOnMouseOver}
-      onMouseOut={handleOnMouseOut}
-    >
-      {children}
-    </StyledHoloCard>
+    <Tilt>
+      <StyledHoloCard
+        url={url}
+        ref={ref}
+        active={hover}
+        animated={animated}
+        activeRotation={activeRotation}
+        activeBackgroundPosition={activeBackgroundPosition}
+        onMouseMove={handleOnMouseOver}
+        onTouchMove={handleOnMouseOver}
+        onMouseOut={handleOnMouseOut}
+      >
+        {children}
+      </StyledHoloCard>
+    </Tilt>
   );
 };
